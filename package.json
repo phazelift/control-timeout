@@ -1,0 +1,30 @@
+{
+  "name": "control-timeout",
+  "version": "0.0.1",
+  "description": "A timeout class for controlling one or multiple timeouts",
+  "main": "control-timeout.min.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/phazelift/control-timeout"
+  },
+  "dependencies" : {
+    "types.js"	: "latest"
+  },
+  "keywords": [
+    "timeout",
+    "delay",
+    "delayed",
+    "control",
+    "controlled",
+    "interval"
+  ],
+  "author": "Dennis Raymondo van der Sluis <phazelift@gmail.com> (https://github.com/phazelift/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/phazelift/control-timeout/issues"
+  },
+  "homepage": "https://github.com/phazelift/control-timeout"
+}
