@@ -48,17 +48,23 @@ class Timeout
 
 
 	stopOne: ( id ) ->
-		clearTimeout @running[ id ]
-		delete @running[ id ]
+		if (id= types.forceString id) and @isRunning id
+			clearTimeout @running[ id ]
+			delete @running[ id ]
 		return @
 
 
-	stop: ( id ) ->
-		if not id then	for id of @running
+	stop: ( ids... ) ->
+		if not ids.length then for id of @running
 			@stopOne id
-		else
+		else for id in ids
 			@stopOne id
 		return @
+
+
+	setDelay: ( id, delay ) ->
+		if @exists id
+			@timeout[ id ].delay= types.forceNumber delay, @timeout[ id ].delay
 
 
 	setTimeout: ( id, action, delay ) ->
@@ -69,23 +75,23 @@ class Timeout
 		return @
 
 
-	run: ( id ) ->
+	run: ( id, args... ) ->
 		if types.isString(id) and (@exists id) and (not @isRunning id)
-			@setTimeout id, @timeout[ id ].action, @timeout[ id ].delay
+			@setTimeout id, @timeout[ id ].action.bind(@, args...), @timeout[id].delay
 		else for id, timeout of @timeout
 			if not @isRunning id
-				@setTimeout id, timeout.action, timeout.delay
+				@setTimeout id, timeout.action.bind(@, args...), timeout.delay
 		return @
 
 
-	removeAll: ( stop ) ->
-		@stop() if stop
+	removeAll: () ->
+		@stop()
 		@timeout= {}
 		return @
 
 
-	remove: ( id ) ->
-		if id= types.forceString id
+	remove: ( ids... ) ->
+		if ids.length then for id in ids
 			@stopOne id
 			delete @timeout[ id ]
 		else
@@ -103,7 +109,7 @@ class Timeout
 
 		timeout=
 			action	: types.forceFunction action, settings.action
-			delay		: types.forceNumber(delay, 0) or types.forceNumber(settings.delay, @delay)
+			delay		: Math.abs( types.forceNumber(delay, 0) or types.forceNumber(settings.delay, @delay) )
 
 		id= types.forceString( id ) or settings.id
 
