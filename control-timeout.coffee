@@ -26,29 +26,34 @@
 
 types= require 'types.js'
 
+moduleName= 'control-timeout'
+
 
 
 class Timeout
 
-	@log 		= types.forceFunction console?.log
+	@setLog	= ( log ) -> Timeout.log= types.forceFunction log
+
+	@log 		= Timeout.setLog console?.log
 	@delay	= 0
 
 
+
 	constructor: ( delay ) ->
-		@timeout	= {}
-		@running	= {}
-		@delay	= (Math.abs delay) or Timeout.delay
+		@timeouts	= {}
+		@running		= {}
+		@delay		= (Math.abs delay) or Timeout.delay
 
 
 
-	exists: ( id ) -> @timeout.hasOwnProperty id
+	exists: ( id ) -> @timeouts.hasOwnProperty id
 
 
 	isRunning: ( id ) -> @running.hasOwnProperty id
 
 
-	stopOne: ( id ) ->
-		if (id= types.forceString id) and @isRunning id
+	_stopOne: ( id ) ->
+		if @isRunning id
 			clearTimeout @running[ id ]
 			delete @running[ id ]
 		return @
@@ -56,68 +61,79 @@ class Timeout
 
 	stop: ( ids... ) ->
 		if not ids.length then for id of @running
-			@stopOne id
+			@_stopOne id
 		else for id in ids
-			@stopOne id
+			@_stopOne id
 		return @
 
 
 	setDelay: ( id, delay ) ->
 		if @exists id
-			@timeout[ id ].delay= types.forceNumber delay, @timeout[ id ].delay
+			@timeouts[ id ].delay= types.forceNumber delay, @timeouts[ id ].delay
 
 
-	setTimeout: ( id, action, delay ) ->
-		@running[ id ]= setTimeout =>
+	getTimeout: ( id ) -> @running[ id ]
+
+
+	_setTimeout: ( id, action, delay ) ->
+		return @running[ id ]= setTimeout =>
 			delete @running[ id ]
 			action()
 		, delay
-		return @
 
 
 	run: ( id, args... ) ->
-		if types.isString(id) and (@exists id) and (not @isRunning id)
-			@setTimeout id, @timeout[ id ].action.bind(@, args...), @timeout[id].delay
-		else for id, timeout of @timeout
+		timeouts= []
+		if not id then for id, timeout of @timeouts
 			if not @isRunning id
-				@setTimeout id, timeout.action.bind(@, args...), timeout.delay
-		return @
+				timeouts.push @_setTimeout id, timeout.action.bind(null, args...), timeout.delay
+		else if @exists id
+			timeouts.push @_setTimeout id, @timeouts[id].action.bind(null, args...), @timeouts[id].delay
+		else
+			Timeout.log moduleName+ ': timeout with id: "'+ id+ '" was not found'
+
+		switch timeouts.length
+			when 0
+				Timeout.log moduleName+ ': no timeouts were found, nothing to run..'
+				return null
+			when 1
+				return timeouts[0]
+			else return timeouts
 
 
 	removeAll: () ->
 		@stop()
-		@timeout= {}
+		@timeouts= {}
 		return @
 
 
 	remove: ( ids... ) ->
 		if ids.length then for id in ids
-			@stopOne id
-			delete @timeout[ id ]
+			@_stopOne id
+			delete @timeouts[ id ]
 		else
-			Timeout.log 'cannot remove invalid or non-existing timeout!'
+			Timeout.log moduleName+ ': cannot remove, invalid or non-existing timeout!'
 		return @
+
+
+	_add: ( id, action, delay ) ->
+		if types.notString(id) or not id.length
+			Timeout.log moduleName+ ': cannot add timeout, invalid or missing id!'
+		else if @exists id
+			Timeout.log moduleName+ ': cannot add timeout, id: '+ id+ ' exists already!'
+		else
+			@timeouts[ id ]=
+				action	: types.forceFunction action
+				delay		: Math.abs types.forceNumber( delay, @delay )
+			return id
+		return undefined
 
 
 	add: ( id, action, delay ) ->
-
-		settings= types.forceObject id
-
-		if not types.forceString( id, settings.id )
-			Timeout.log 'cannot add timeout, invalid or missing arguments!'
-			return @
-
-		timeout=
-			action	: types.forceFunction action, settings.action
-			delay		: Math.abs( types.forceNumber(delay, 0) or types.forceNumber(settings.delay, @delay) )
-
-		id= types.forceString( id ) or settings.id
-
-		if @exists id
-			Timeout.log 'cannot add timeout, id: '+ id+ ' exists already!'
+		if types.isObject id
+			return @_add id.id, id.action, id.delay
 		else
-			@timeout[ id ]= timeout
-		return @
+			return @_add id, action, delay
 
 
 
