@@ -1,6 +1,6 @@
 {
   "name": "control-timeout",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A timeout class for controlling one or multiple timeouts",
   "main": "control-timeout.min.js",
   "scripts": {

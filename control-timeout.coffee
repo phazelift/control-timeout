@@ -93,11 +93,8 @@ class Timeout
 			Timeout.log moduleName+ ': timeout with id: "'+ id+ '" was not found'
 
 		switch timeouts.length
-			when 0
-				Timeout.log moduleName+ ': no timeouts were found, nothing to run..'
-				return null
-			when 1
-				return timeouts[0]
+			when 0 then return null
+			when 1 then return timeouts[0]
 			else return timeouts
 
 

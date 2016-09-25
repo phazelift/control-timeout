@@ -92,7 +92,6 @@
       }
       switch (timeouts.length) {
         case 0:
-          Timeout.log(moduleName + ': no timeouts were found, nothing to run..');
           return null;
         case 1:
           return timeouts[0];
