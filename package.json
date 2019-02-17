@@ -1,17 +1,23 @@
 {
   "name": "control-timeout",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "A timeout class for controlling one or multiple timeouts",
   "main": "control-timeout.min.js",
   "scripts": {
+    "uglify": "uglifyjs control-timeout.js -c -m -o control-timeout.min.js",
+    "build": "coffee -c --transpile control-timeout.coffee && npm run uglify",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/phazelift/control-timeout"
   },
-  "dependencies" : {
-    "types.js"	: "latest"
+  "dependencies": {
+    "types.js": "latest"
+  },
+  "devDependencies": {
+    "@babel/core": "latest",
+    "@babel/preset-env": "latest"
   },
   "keywords": [
     "timeout",

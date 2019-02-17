@@ -122,8 +122,7 @@ class Timeout
 			@timeouts[ id ]=
 				action	: types.forceFunction action
 				delay		: Math.abs types.forceNumber( delay, @delay )
-			return id
-		return undefined
+		return @
 
 
 	add: ( id, action, delay ) ->

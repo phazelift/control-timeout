@@ -111,6 +111,17 @@ var rawFirst= timeout.getTimeout( 'first' );
 
 ---
 
+change log
+==========
+
+
+**0.1.0**
+
+- .add prototype now returns the context
+- adds babel transpiler as dev dependency for better cross browser compatibility
+
+---
+
 ###license
 
 MIT
