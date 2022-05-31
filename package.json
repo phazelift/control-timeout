@@ -1,12 +1,12 @@
 {
   "name": "control-timeout",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A timeout class for controlling one or multiple timeouts",
   "main": "control-timeout.min.js",
   "scripts": {
-    "uglify": "uglifyjs control-timeout.js -c -m -o control-timeout.min.js",
     "build": "coffee -c --transpile control-timeout.coffee && npm run uglify",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	 "uglify": "terser control-timeout.js -c -m -o control-timeout.min.js"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,7 @@
     "controlled",
     "interval"
   ],
-  "author": "Dennis Raymondo van der Sluis <phazelift@gmail.com> (https://github.com/phazelift/)",
+  "author": "dennis raymondo van der sluis",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/phazelift/control-timeout/issues"
